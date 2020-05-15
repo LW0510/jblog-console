@@ -1,18 +1,22 @@
 import request from '@/utils/request'
+import Qs from 'qs'
 
 // 登录方法
-export function login(username, password, code, uuid) {
-  const data = {
-    username,
-    password,
-    code,
-    uuid
-  }
+export function login(loginInfo) {
+  // const data = {
+  //   username,
+  //   password,
+  //   code,
+  //   uuid
+  // }
   return request({
     url: '/login',
     method: 'post',
-    params: data
-  })
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    },
+    data: Qs.stringify(loginInfo)
+  })  
 }
 
 // 获取用户详细信息
