@@ -13,6 +13,11 @@ import App from './App'
 import store from './store'
 import router from './router'
 import permission from './directive/permission'
+import VueQuillEditor from 'vue-quill-editor' //富文本
+import 'quill/dist/quill.core.css'
+import 'quill/dist/quill.snow.css'
+import 'quill/dist/quill.bubble.css'
+Vue.use(VueQuillEditor)
 
 import './assets/icons' // icon
 import './permission' // permission control

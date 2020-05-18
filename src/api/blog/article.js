@@ -12,8 +12,11 @@ export function listArticle(query) {
 // 查询文章详细
 export function getArticle(id) {
   return request({
-    url: '/article/' + id,
-    method: 'get'
+    url: '/article/getArticle',
+    method: 'get',
+    params:{
+      id
+    }
   })
 }
 

@@ -46,15 +46,15 @@
           <el-button
             size="mini"
             type="text"
-            icon="el-icon-edit"
-            @click="handleUpdate(scope.row)"
+            icon="el-icon-view"
+            @click="handleView(scope.row)"
             v-hasPermi="['system:article:edit']"
           >详情</el-button>
           <el-button
             size="mini"
             type="text"
-            icon="el-icon-delete"
-            @click="handleDelete(scope.row)"
+            icon="el-icon-edit"
+            @click="handleAudit(scope.row)"
             v-hasPermi="['system:article:remove']"
           >审核</el-button>
         </template>
@@ -69,47 +69,25 @@
       @pagination="getList"
     />
 
-    <!-- 添加或修改文章对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
-      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="用户ID" prop="userId">
-          <el-input v-model="form.userId" placeholder="请输入用户ID" />
-        </el-form-item>
-        <el-form-item label="作者昵称" prop="nickName">
-          <el-input v-model="form.nickName" placeholder="请输入作者昵称" />
-        </el-form-item>
-        <el-form-item label="文章标题" prop="title">
-          <el-input v-model="form.title" placeholder="请输入文章标题" />
-        </el-form-item>
-        <el-form-item label="文章摘要" prop="summary">
-          <el-input v-model="form.summary" placeholder="请输入文章摘要" />
-        </el-form-item>
-        <el-form-item label="文章内容txt" prop="content">
-          <el-input v-model="form.content" placeholder="请输入文章内容txt" />
-        </el-form-item>
-        <el-form-item label="文章内容html" prop="contentHtml">
-          <el-input v-model="form.contentHtml" placeholder="请输入文章内容html" />
-        </el-form-item>
-        <el-form-item label="浏览数" prop="viewNum">
-          <el-input v-model="form.viewNum" placeholder="请输入浏览数" />
-        </el-form-item>
-        <el-form-item label="评论数" prop="commentNum">
-          <el-input v-model="form.commentNum" placeholder="请输入评论数" />
-        </el-form-item>
-        <el-form-item label="权重" prop="weight">
-          <el-input v-model="form.weight" placeholder="请输入权重" />
-        </el-form-item>
-        <el-form-item label="文章标签" prop="tags">
-          <el-input v-model="form.tags" placeholder="请输入文章标签" />
-        </el-form-item>
-        <el-form-item label="文章分类ID" prop="categoryId">
-          <el-input v-model="form.categoryId" placeholder="请输入文章分类ID" />
+    <!-- 查看详情弹框 -->
+    <el-dialog :title="title" :visible.sync="open" width="800px" append-to-body>
+ <el-form ref="form" :model="form" :rules="rules" label-width="150px" size="mini">
+        <el-form-item label="标题："><div v-cloak>{{ form.title }}</div></el-form-item>
+        <el-form-item label="摘要：">{{ form.summary}}</el-form-item>
+        <el-form-item label="分类：">{{ form.category}}</el-form-item>
+        <el-form-item label="标签：">{{ form.tags}}</el-form-item>
+        <el-form-item label="内容：">
+                  <quill-editor
+                class="quill-editor_wrapper"
+                v-model="form.content"
+                :options="editorOption"
+                @blur="onEditorBlur($event)"
+                @focus="onEditorFocus($event)"
+                @change="onEditorChange($event)"
+              ></quill-editor>
         </el-form-item>
       </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="submitForm">确 定</el-button>
-        <el-button @click="cancel">取 消</el-button>
-      </div>
+     
     </el-dialog>
   </div>
 </template>
@@ -188,6 +166,26 @@ export default {
         this.loading = false;
       });
     },
+    /** 查看详情操作 */
+    handleView(row){
+      this.reset();
+      getArticle(row.id).then(response => {
+        this.form = response.data;
+        let that = this.form;
+        that.category = that.category.categoryName;
+
+        //tags格式化
+        let tags = [];
+        that.tags.map((item,i) => {
+          tags.push(item.tagName);
+        });
+         this.form.tags = tags.join(",");
+      });
+    
+      this.open = true;
+      this.title = "文章详情";
+    },
+
     // 取消按钮
     cancel() {
       this.open = false;
@@ -222,12 +220,6 @@ export default {
     resetQuery() {
       this.resetForm("queryForm");
       this.handleQuery();
-    },
-    /** 新增按钮操作 */
-    handleAdd() {
-      this.reset();
-      this.open = true;
-      this.title = "添加文章";
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
@@ -293,7 +285,11 @@ export default {
         }).then(response => {
           this.download(response.msg);
         }).catch(function() {});
-    }
+    },
+    //富文本禁止编辑
+    onEditorFocus(event) { 
+        event.enable(false);
+    }, // 获得焦点事件
   }
 };
 </script>
