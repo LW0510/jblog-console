@@ -41,6 +41,7 @@
       <el-table-column label="摘要" align="center" prop="summary" />
       <el-table-column label="标签" align="center" prop="tags.join(',')" />
       <el-table-column label="浏览量" align="center" prop="viewNum" />
+      <el-table-column label="状态" align="center" prop="status" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
@@ -54,9 +55,16 @@
             size="mini"
             type="text"
             icon="el-icon-edit"
-            @click="handleAudit(scope.row)"
+            @click="handlePass(scope.row)"
             v-hasPermi="['system:article:remove']"
-          >审核</el-button>
+          >通过</el-button>
+          <el-button
+            size="mini"
+            type="text"
+            icon="el-icon-edit"
+            @click="handleRefuse(scope.row)"
+            v-hasPermi="['system:article:remove']"
+          >拒绝</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -130,6 +138,7 @@ export default {
         weight: undefined,
         tags: undefined,
         categoryId: undefined,
+        status: undefined
       },
       // 表单参数
       form: {},
@@ -184,6 +193,39 @@ export default {
     
       this.open = true;
       this.title = "文章详情";
+    },
+
+    handlePass(row){
+      let data = {
+        id: row.id,
+        status: 1
+      }
+       this.$confirm('是否确认审核通过文章编号为"' + row.id + '"的数据项?', "警告", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning"
+        }).then(function() {
+          return updateArticle(data);
+        }).then(() => {
+          this.getList();
+          this.msgSuccess("审核通过成功");
+        }).catch(function() {});
+    },
+    handleRefuse(row){
+     let data = {
+        id: row.id,
+        status: 2
+      }
+       this.$confirm('是否确认审核拒绝文章编号为"' + row.id + '"的数据项?', "警告", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning"
+        }).then(function() {
+          return updateArticle(data);
+        }).then(() => {
+          this.getList();
+          this.msgSuccess("审核拒绝成功");
+        }).catch(function() {});
     },
 
     // 取消按钮

@@ -1,4 +1,5 @@
 import request from '@/utils/request'
+import Qs from 'qs'
 
 // 查询文章列表
 export function listArticle(query) {
@@ -32,9 +33,9 @@ export function addArticle(data) {
 // 修改文章
 export function updateArticle(data) {
   return request({
-    url: '/article',
-    method: 'put',
-    data: data
+    url: '/article/updateArticle',
+    method: 'post',
+    data: Qs.stringify(data)
   })
 }
 
