@@ -113,7 +113,7 @@ export const constantRoutes = [
 ]
 
 export default new Router({
-  mode: 'history', // 去掉url中的#
+  // mode: 'history', // 去掉url中的#，但是请注意部署到线上会出问题，找不到一些css、js资源
   scrollBehavior: () => ({ y: 0 }),
   routes: constantRoutes
 })
