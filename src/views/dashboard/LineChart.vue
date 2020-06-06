@@ -6,6 +6,7 @@
 import echarts from 'echarts'
 require('echarts/theme/macarons') // echarts theme
 import resize from './mixins/resize'
+import { listArticle } from "@/api/blog/article";
 
 export default {
   mixins: [resize],
@@ -26,24 +27,30 @@ export default {
       type: Boolean,
       default: true
     },
-    chartData: {
-      type: Object,
-      required: true
-    }
+    // chartData: {
+    //   type: Object,
+    //   required: true
+    // }
   },
   data() {
     return {
-      chart: null
+      chart: null,
+        xValue:[],
+        yValue : [],
+        data:[]
     }
   },
   watch: {
-    chartData: {
-      deep: true,
-      handler(val) {
-        this.setOptions(val)
-      }
-    }
+    // chartData: {
+    //   deep: true,
+    //   handler(val) {
+    //     this.setOptions(val)
+    //   }
+    // }
   },
+    created() {
+        this.listArticle();
+    },
   mounted() {
     this.$nextTick(() => {
       this.initChart()
@@ -57,77 +64,90 @@ export default {
     this.chart = null
   },
   methods: {
-    initChart() {
+      listArticle(){
+          this.loading = true;
+          let query = {
+            pageNum: 1,
+            pageSize:10,
+            orderField:'view_num',
+            order:'desc',
+            status:'1'
+          }
+          listArticle(query).then(response => {
+              response.rows.sort(function (a,b) {
+                  return a.viewNum-b.viewNum;
+              });
+              for (var i = 0;i<response.rows.length;i++){
+                  this.xValue.push(response.rows[i].viewNum);
+                  this.yValue.push(response.rows[i].title);
+                  this.data[i] =[response.rows[i].title,response.rows[i].viewNum];
+              }
+              this.initChart(this.xValue,this.yValue,this.data);
+          });
+          this.loading = false;
+      },
+
+    initChart(xValue,yValue,data) {
       this.chart = echarts.init(this.$el, 'macarons')
-      this.setOptions(this.chartData)
+      this.setOptions(data)
     },
-    setOptions({ expectedData, actualData } = {}) {
-      this.chart.setOption({
-        xAxis: {
-          data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-          boundaryGap: false,
-          axisTick: {
-            show: false
-          }
-        },
-        grid: {
-          left: 10,
-          right: 10,
-          bottom: 20,
-          top: 30,
-          containLabel: true
-        },
-        tooltip: {
-          trigger: 'axis',
-          axisPointer: {
-            type: 'cross'
+    setOptions(data) {
+        const set = [
+            ['店铺', '销量'],
+            ['Top10', 427],
+            ['Top9', 433],
+            ['Top8', 437],
+            ['Top7', 455],
+            ['Top6', 461],
+            ['Top5', 463],
+            ['Top4', 468],
+            ['Top3', 468],
+            ['Top2', 483],
+            ['Top1', 500]
+        ];
+
+        this.chart.setOption({
+          dataset:{
+              source:data
           },
-          padding: [5, 10]
-        },
-        yAxis: {
-          axisTick: {
-            show: false
-          }
-        },
-        legend: {
-          data: ['expected', 'actual']
-        },
-        series: [{
-          name: 'expected', itemStyle: {
-            normal: {
-              color: '#FF005A',
-              lineStyle: {
-                color: '#FF005A',
-                width: 2
+            title: {
+                text: '最热文章Top10 (浏览量)',
+                left:'center'
+            },
+          grid:{
+              left:200,
+              right:24,
+              top:40,
+              bottom:40
+          },
+          // dataZoom:{
+          //     type:'slider',
+          //     yAxisIndex:0,
+          //     left:4,
+          //     width:16
+          // },
+          xAxis: {
+              type:'value'
+          },
+          yAxis: {
+              type:'category',
+          },
+          series: [{
+              type: 'bar',
+              barWidth:'80%',
+              itemStyle: {
+                  normal: {
+                      label: {
+                          show: true,		//开启显示
+                          position: 'right',	//在上方显示
+                          textStyle: {	    //数值样式
+                              color: 'black',
+                              fontSize: 12
+                          }
+                      }
+                  }
               }
-            }
-          },
-          smooth: true,
-          type: 'line',
-          data: expectedData,
-          animationDuration: 2800,
-          animationEasing: 'cubicInOut'
-        },
-        {
-          name: 'actual',
-          smooth: true,
-          type: 'line',
-          itemStyle: {
-            normal: {
-              color: '#3888fa',
-              lineStyle: {
-                color: '#3888fa',
-                width: 2
-              },
-              areaStyle: {
-                color: '#f3f8ff'
-              }
-            }
-          },
-          data: actualData,
-          animationDuration: 2800,
-          animationEasing: 'quadraticOut'
-        }]
+          }]
       })
     }
   }

@@ -55,7 +55,7 @@
           v-hasPermi="['system:tag:remove']"
         >删除</el-button>
       </el-col>
-      <el-col :span="1.5">
+      <!-- <el-col :span="1.5">
         <el-button
           type="warning"
           icon="el-icon-download"
@@ -63,7 +63,7 @@
           @click="handleExport"
           v-hasPermi="['system:tag:export']"
         >导出</el-button>
-      </el-col>
+      </el-col> -->
     </el-row>
 
     <el-table v-loading="loading" :data="tagList" @selection-change="handleSelectionChange">
@@ -121,7 +121,7 @@
 </template>
 
 <script>
-import { listTag, getTag, delTag, addTag, updateTag, exportTag } from "@/api/blog/tag";
+import { listTag, getTag, delTag, addTag, updateTag, getTagById } from "@/api/blog/tag";
 
 export default {
   name: "Tag",
@@ -216,7 +216,7 @@ export default {
     handleUpdate(row) {
       this.reset();
       const id = row.id || this.ids
-      getTag(id).then(response => {
+      getTagById(id).then(response => {
         this.form = response.data;
         this.open = true;
         this.title = "修改标签";

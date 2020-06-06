@@ -12,34 +12,40 @@ export function listCategory(query) {
 // 查询文章类别详细
 export function getCategory(id) {
   return request({
-    url: '/category/' + id,
-    method: 'get'
+    url: '/category/detail/info',
+    method: 'get',
+    params:{
+      id
+    }
   })
 }
 
 // 新增文章类别
 export function addCategory(data) {
   return request({
-    url: '/category',
+    url: '/category/save',
     method: 'post',
-    data: data
+    params: data
   })
 }
 
 // 修改文章类别
 export function updateCategory(data) {
   return request({
-    url: '/category',
-    method: 'put',
-    data: data
+    url: '/category/update',
+    method: 'post',
+    params: data
   })
 }
 
 // 删除文章类别
 export function delCategory(id) {
   return request({
-    url: '/category/' + id,
-    method: 'delete'
+    url: '/category/delete',
+    method: 'post',
+    params:{
+      id
+    }
   })
 }
 
@@ -49,5 +55,17 @@ export function exportCategory(query) {
     url: '/category/export',
     method: 'get',
     params: query
+  })
+}
+
+
+// id查询文章类别
+export function getCategoryById(id) {
+  return request({
+    url: '/category/getCategory',
+    method: 'get',
+    params:{
+      id
+    }
   })
 }

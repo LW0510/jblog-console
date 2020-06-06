@@ -91,7 +91,7 @@
           v-hasPermi="['monitor:operlog:remove']"
         >清空</el-button>
       </el-col>
-      <el-col :span="1.5">
+      <!-- <el-col :span="1.5">
         <el-button
           type="warning"
           icon="el-icon-download"
@@ -99,7 +99,7 @@
           @click="handleExport"
           v-hasPermi="['system:config:export']"
         >导出</el-button>
-      </el-col>
+      </el-col> -->
     </el-row>
 
     <el-table v-loading="loading" :data="list" @selection-change="handleSelectionChange">

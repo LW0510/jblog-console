@@ -7,9 +7,9 @@
         </div>
         <div class="card-panel-description">
           <div class="card-panel-text">
-            访客
+            用户数
           </div>
-          <count-to :start-val="0" :end-val="102400" :duration="2600" class="card-panel-num" />
+          <count-to :start-val="0" :end-val="userCount" :duration="2600" class="card-panel-num" />
         </div>
       </div>
     </el-col>
@@ -20,9 +20,9 @@
         </div>
         <div class="card-panel-description">
           <div class="card-panel-text">
-            消息
+            评论数
           </div>
-          <count-to :start-val="0" :end-val="81212" :duration="3000" class="card-panel-num" />
+          <count-to :start-val="0" :end-val="commentCount" :duration="3000" class="card-panel-num" />
         </div>
       </div>
     </el-col>
@@ -35,7 +35,7 @@
           <div class="card-panel-text">
             文章数
           </div>
-          <count-to :start-val="0" :end-val="9280" :duration="3200" class="card-panel-num" />
+          <count-to :start-val="0" :end-val="articleCount" :duration="3200" class="card-panel-num" />
         </div>
       </div>
     </el-col>
@@ -46,9 +46,9 @@
         </div>
         <div class="card-panel-description">
           <div class="card-panel-text">
-            点赞数
+            标签数
           </div>
-          <count-to :start-val="0" :end-val="13600" :duration="3600" class="card-panel-num" />
+          <count-to :start-val="0" :end-val="tagCount" :duration="3600" class="card-panel-num" />
         </div>
       </div>
     </el-col>
@@ -57,15 +57,38 @@
 
 <script>
 import CountTo from 'vue-count-to'
+import {count} from '@/api/blog/article'
 
 export default {
   components: {
     CountTo
   },
+
+  data(){
+    return {
+      userCount:0,
+      commentCount:0,
+      articleCount:0,
+      tagCount:0
+    }
+  },
   methods: {
     handleSetLineChartData(type) {
       this.$emit('handleSetLineChartData', type)
+    },
+
+    getCount(){
+      count().then(response => {
+        this.userCount = response.userCount;
+            this.commentCount = response.commentCount;
+                this.articleCount = response.articleCount;
+                    this.tagCount = response.tagCount;
+
+      });
     }
+  },
+  created(){
+    this.getCount();
   }
 }
 </script>

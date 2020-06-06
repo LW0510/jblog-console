@@ -112,7 +112,7 @@
               v-hasPermi="['system:user:remove']"
             >删除</el-button>
           </el-col>
-          <el-col :span="1.5">
+          <!-- <el-col :span="1.5">
             <el-button
               type="info"
               icon="el-icon-upload2"
@@ -129,7 +129,7 @@
               @click="handleExport"
               v-hasPermi="['system:user:export']"
             >导出</el-button>
-          </el-col>
+          </el-col> -->
         </el-row>
 
         <el-table v-loading="loading" :data="userList" @selection-change="handleSelectionChange">

@@ -19,15 +19,6 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="文章摘要" prop="summary">
-        <el-input
-          v-model="queryParams.summary"
-          placeholder="请输入文章摘要"
-          clearable
-          size="small"
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
       <el-form-item label="文章标签" prop="tags">
         <el-input
           v-model="queryParams.tags"
@@ -86,10 +77,10 @@
 
     <el-table v-loading="loading" :data="articleList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="作者" align="center" prop="nickname" />
+      <el-table-column label="作者" align="center" prop="nickName" />
       <el-table-column label="标题" align="center" prop="title" />
       <el-table-column label="摘要" align="center" prop="summary" />
-      <el-table-column label="标签" align="center" prop="tags.join(',')" />
+      <el-table-column label="标签" align="center" prop="tags2" />
       <el-table-column label="浏览量" align="center" prop="viewNum" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
@@ -187,6 +178,7 @@ export default {
       title: "",
       // 是否显示弹出层
       open: false,
+      total: 0,
       // 查询参数
       queryParams: {
         pageNum: 1,
@@ -202,6 +194,7 @@ export default {
         weight: undefined,
         tags: undefined,
         categoryId: undefined,
+        status:1
       },
       // 表单参数
       form: {},
@@ -233,8 +226,13 @@ export default {
     getList() {
       this.loading = true;
       listArticle(this.queryParams).then(response => {
-        this.articleList = response.data;
-        this.total = response.total;
+        this.articleList = response.rows;
+        let tags = this.articleList.tags;
+        if( tags != undefined){
+          this.articleList.tags = tags.join(',');
+        }
+        
+        this.total = response.totalCount;
         this.loading = false;
       });
     },

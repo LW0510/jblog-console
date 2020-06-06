@@ -10,6 +10,7 @@ export function listArticle(query) {
   })
 }
 
+
 // 查询文章详细
 export function getArticle(id) {
   return request({
@@ -30,12 +31,12 @@ export function addArticle(data) {
   })
 }
 
-// 修改文章
-export function updateArticle(data) {
+// 审核文章
+export function auditArticle(data) {
   return request({
-    url: '/article/updateArticle',
+    url: '/article/auditArticle',
     method: 'post',
-    data: Qs.stringify(data)
+    params: data
   })
 }
 
@@ -53,5 +54,12 @@ export function exportArticle(query) {
     url: '/article/export',
     method: 'get',
     params: query
+  })
+}
+
+export function count() {
+  return request({
+    url: '/article/count',
+    method: 'get',
   })
 }

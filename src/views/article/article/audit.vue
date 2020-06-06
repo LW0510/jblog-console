@@ -36,12 +36,11 @@
 
     <el-table v-loading="loading" :data="articleList">
       <el-table-column type="index" width="55" align="center" />
-      <el-table-column label="作者" align="center" prop="nickname" />
+      <el-table-column label="作者" align="center" prop="nickName" />
       <el-table-column label="标题" align="center" prop="title" />
       <el-table-column label="摘要" align="center" prop="summary" />
-      <el-table-column label="标签" align="center" prop="tags.join(',')" />
+      <el-table-column label="标签" align="center" prop="tags2" />
       <el-table-column label="浏览量" align="center" prop="viewNum" />
-      <el-table-column label="状态" align="center" prop="status" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
@@ -101,7 +100,7 @@
 </template>
 
 <script>
-import { listArticle, getArticle, delArticle, addArticle, updateArticle, exportArticle } from "@/api/blog/article";
+import { listArticle, getArticle, delArticle, addArticle, auditArticle, exportArticle } from "@/api/blog/article";
 
 export default {
   name: "Article",
@@ -138,7 +137,7 @@ export default {
         weight: undefined,
         tags: undefined,
         categoryId: undefined,
-        status: undefined
+        status: 0
       },
       // 表单参数
       form: {},
@@ -170,8 +169,8 @@ export default {
     getList() {
       this.loading = true;
       listArticle(this.queryParams).then(response => {
-        this.articleList = response.data;
-        this.total = response.total;
+        this.articleList = response.rows;
+        this.total = response.totalCount;
         this.loading = false;
       });
     },
@@ -198,14 +197,14 @@ export default {
     handlePass(row){
       let data = {
         id: row.id,
-        status: 1
+        status: "1"
       }
        this.$confirm('是否确认审核通过文章编号为"' + row.id + '"的数据项?', "警告", {
           confirmButtonText: "确定",
           cancelButtonText: "取消",
           type: "warning"
         }).then(function() {
-          return updateArticle(data);
+          return auditArticle(data);
         }).then(() => {
           this.getList();
           this.msgSuccess("审核通过成功");
@@ -221,7 +220,7 @@ export default {
           cancelButtonText: "取消",
           type: "warning"
         }).then(function() {
-          return updateArticle(data);
+          return auditArticle(data);
         }).then(() => {
           this.getList();
           this.msgSuccess("审核拒绝成功");
@@ -278,7 +277,7 @@ export default {
       this.$refs["form"].validate(valid => {
         if (valid) {
           if (this.form.id != undefined) {
-            updateArticle(this.form).then(response => {
+            auditArticle(this.form).then(response => {
               if (response.code === 200) {
                 this.msgSuccess("修改成功");
                 this.open = false;

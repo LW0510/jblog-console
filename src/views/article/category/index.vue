@@ -55,7 +55,7 @@
           v-hasPermi="['system:category:remove']"
         >删除</el-button>
       </el-col>
-      <el-col :span="1.5">
+      <!-- <el-col :span="1.5">
         <el-button
           type="warning"
           icon="el-icon-download"
@@ -63,7 +63,7 @@
           @click="handleExport"
           v-hasPermi="['system:category:export']"
         >导出</el-button>
-      </el-col>
+      </el-col> -->
     </el-row>
 
     <el-table v-loading="loading" :data="categoryList" @selection-change="handleSelectionChange">
@@ -122,7 +122,7 @@
 </template>
 
 <script>
-import { listCategory, getCategory, delCategory, addCategory, updateCategory, exportCategory } from "@/api/blog/category";
+import { listCategory, getCategory, delCategory, addCategory, updateCategory, exportCategory ,getCategoryById} from "@/api/blog/category";
 
 export default {
   name: "Category",
@@ -217,7 +217,7 @@ export default {
     handleUpdate(row) {
       this.reset();
       const id = row.id || this.ids
-      getCategory(id).then(response => {
+      getCategoryById(id).then(response => {
         this.form = response.data;
         this.open = true;
         this.title = "修改文章类别";
@@ -228,7 +228,12 @@ export default {
       this.$refs["form"].validate(valid => {
         if (valid) {
           if (this.form.id != undefined) {
-            updateCategory(this.form).then(response => {
+            let params = {
+              id:this.form.id,
+              categoryName: this.form.categoryName,
+              description: this.form.description
+            }
+            updateCategory(params).then(response => {
               if (response.code === 200) {
                 this.msgSuccess("修改成功");
                 this.open = false;
